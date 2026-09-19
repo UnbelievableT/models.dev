@@ -1,5 +1,6 @@
-# Shared-pool price, 50% of xAI's list. Requests whose input reaches 200,000
-# tokens bill the whole request at the tier below.
+# Effort: $.reasoning.effort on /v1/responses, $.reasoning_effort on /v1/chat/completions,
+# forwarded unchanged. Shared-pool price, 50% of xAI's list. Requests whose input
+# reaches 200,000 tokens bill the whole request at the tier below.
 # https://ai.topxea.com/pricing/grok-4.6 (accessed 2026-09-19)
 base_model = "xai/grok-4.6"
 

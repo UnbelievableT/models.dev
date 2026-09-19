@@ -1,6 +1,7 @@
-# A commercially fine-tuned GLM-5.3 with its refusal alignment removed, served
-# from TopxAI's own private deployment rather than Z.ai's API; text only,
-# /v1/chat/completions only. Unique to this host, so defined inline.
+# Effort: $.reasoning_effort on /v1/chat/completions, forwarded unchanged; the base
+# GLM-5.3 always reasons with low|high|max. A commercially fine-tuned GLM-5.3 with its
+# refusal alignment removed, served from TopxAI's own private deployment rather than
+# Z.ai's API; text only. Unique to this host, so defined inline.
 # https://ai.topxea.com/docs/glm-5-3-abliterated (accessed 2026-09-19)
 name = "GLM-5.3-Abliterated"
 description = "Fine-tuned GLM-5.3 with refusal alignment removed, on TopxAI's private deployment; text only"
