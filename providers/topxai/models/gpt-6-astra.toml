@@ -1,9 +1,11 @@
+# Effort: $.reasoning.effort on /v1/responses, $.reasoning_effort on /v1/chat/completions,
+# forwarded unchanged; the lab's and peers' level set for this model.
 # https://ai.topxea.com/pricing/gpt-6-astra (accessed 2026-09-19)
 base_model = "openai/gpt-6-astra"
 
 [[reasoning_options]]
 type = "effort"
-values = ["none", "low", "medium", "high", "xhigh", "max"]
+values = ["low", "medium", "high", "xhigh", "max"]
 
 [cost]
 input = 5
