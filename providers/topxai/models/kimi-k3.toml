@@ -1,7 +1,7 @@
 # Toggle: $.thinking.type = "enabled"|"disabled"|"adaptive" as Moonshot's API takes it,
 # forwarded unchanged on /v1/chat/completions; adaptive depth via $.output_config.effort.
-# One official line at 80% of Moonshot's list.
-# https://ai.topxea.com/pricing/kimi-k3 (accessed 2026-09-19)
+# One official line at 80% of Moonshot's list; cache writes bill at the input rate.
+# https://ai.topxea.com/pricing/kimi-k3 (accessed 2026-09-28)
 base_model = "moonshotai/kimi-k3"
 
 [[reasoning_options]]
@@ -18,3 +18,4 @@ field = "reasoning_content"
 input = 2.4
 output = 12
 cache_read = 0.24
+cache_write = 2.4
