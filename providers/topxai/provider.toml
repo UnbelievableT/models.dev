@@ -4,11 +4,11 @@
 # price) for Claude, GPT and Grok, whose official line is 90% of list; the one official
 # line for Kimi and DeepSeek (80% of list); the private deployment for GLM-5.3-Abliterated.
 # Live table and JSON: https://ai.topxea.com/pricing and
-# https://ai.topxea.com/api/pricing (accessed 2026-09-28).
+# https://ai.topxea.com/api/pricing (accessed 2026-10-05).
 # Raw Chat (/v1/chat/completions): $.reasoning_effort forwarded unchanged to the lab.
 # Raw Responses (/v1/responses, GPT and Grok): $.reasoning.effort forwarded unchanged.
 # Raw Messages (/v1/messages, Claude): $.thinking and $.output_config.effort forwarded unchanged.
-# https://ai.topxea.com/docs/api-reference (accessed 2026-09-28)
+# https://ai.topxea.com/docs/api-reference (accessed 2026-10-05)
 name = "TopxAI"
 env = ["TOPXAI_API_KEY"]
 npm = "@ai-sdk/openai-compatible"
