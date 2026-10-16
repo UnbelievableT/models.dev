@@ -3,11 +3,8 @@
 # https://ai.topxea.com/docs/api-reference (accessed 2026-09-28)
 # Shared-pool price, 50% of Anthropic's list; cache lanes from the same table.
 # https://ai.topxea.com/pricing/claude-opus-5-5 (accessed 2026-09-28)
-# Structured output: this host's Chat Completions endpoint ignores response_format for Claude
-# (json_schema and json_object both return plain text, tested 2026-10-16); the Messages
-# endpoint's output_config.format works, but this entry uses the openai-compatible surface.
 base_model = "anthropic/claude-opus-5-5"
-structured_output = false
+structured_output = true
 
 [[reasoning_options]]
 type = "effort"
