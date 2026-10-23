@@ -2,23 +2,29 @@
 # forwarded unchanged; the lab's level set for this model. Reasoning cannot be turned
 # off: the host maps a legacy "none" or "minimal" to "low".
 # Shared-pool price, 50% of OpenAI's list. Requests whose input, cache tokens included,
-# reaches 272,001 tokens bill the whole request at the tier below.
-# https://ai.topxea.com/pricing/gpt-6.1-sol (accessed 2026-09-30)
+# reaches 272,001 tokens bill the whole request at the override below.
+# https://ai.topxea.com/pricing/gpt-6.1-sol and https://ai.topxea.com/api/pricing (accessed 2026-10-23)
+# Structured output: response_format json_schema (strict) and json_object return valid JSON on
+# /v1/chat/completions, checked live 2026-10-16.
+schema = 2
 base_model = "openai/gpt-6.1-sol"
 
-[[reasoning_options]]
-type = "effort"
-values = ["low", "medium", "high", "xhigh", "max"]
+[capabilities]
+reasoning = { supported = true, effort = ["low", "medium", "high", "xhigh", "max"] }
+structured_output = true
 
-[cost]
-input = 1
-output = 5
-cache_read = 0.05
-cache_write = 1.25
+[cost.text.input]
+price = 1
+cache = { read = 0.05, write = 1.25 }
 
-[[cost.tiers]]
-tier = { type = "context", size = 272_000 }
-input = 2
-output = 7.5
-cache_read = 0.1
-cache_write = 2.5
+[[cost.text.input.overrides]]
+when = { context = { gt = 272_000 } }
+price = 2
+cache = { read = 0.1, write = 2.5 }
+
+[cost.text.output]
+price = 5
+
+[[cost.text.output.overrides]]
+when = { context = { gt = 272_000 } }
+price = 7.5

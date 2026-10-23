@@ -1,38 +1,37 @@
-# Effort: $.reasoning_effort on /v1/chat/completions, forwarded unchanged; the base
-# GLM-5.3 always reasons with low|high|max. A commercially fine-tuned GLM-5.3 with its
-# refusal alignment removed, served from TopxAI's own private deployment rather than
-# Z.ai's API; text only. Unique to this host, so defined inline.
-# https://ai.topxea.com/docs/glm-5-3-abliterated (accessed 2026-09-19)
+# A commercially fine-tuned GLM-5.3 with its refusal alignment removed, served from
+# TopxAI's own private deployment rather than Z.ai's API; text only. Unique to this
+# host, so defined inline. https://ai.topxea.com/docs/glm-5-3-abliterated (accessed 2026-09-19)
+# Effort: reasoning_effort = low|high|max on /v1/chat/completions (default max, as
+# https://ai.topxea.com/api/pricing lists it); it always reasons. The trace returns in
+# message.reasoning (not reasoning_content), checked live 2026-10-23; v1 has no value
+# for that field, so no reasoning_field is set.
+# https://ai.topxea.com/pricing/GLM-5.3-Abliterated (accessed 2026-10-23)
+schema = 2
 name = "GLM-5.3-Abliterated"
 description = "Fine-tuned GLM-5.3 with refusal alignment removed, on TopxAI's private deployment; text only"
 family = "glm"
-release_date = "2026-09-18"
-last_updated = "2026-09-18"
-attachment = false
-reasoning = true
-temperature = true
-tool_call = true
-structured_output = true
 open_weights = false
+release_date = "2026-09-18"
 
-# The base GLM-5.3 always reasons with effort low|high|max; the fine-tune keeps
-# the same request shape on /v1/chat/completions ($.reasoning_effort).
-[[reasoning_options]]
-type = "effort"
-values = ["low", "high", "max"]
+[modalities]
+input = ["text"]
+output = ["text"]
 
-[interleaved]
-field = "reasoning_content"
-
-[cost]
-input = 4
-output = 7
-cache_read = 0.4
+[capabilities]
+tools = { supported = true }
+reasoning = { supported = true, default = { type = "effort", value = "max" }, effort = ["low", "high", "max"] }
+structured_output = true
+temperature = true
+top_p = true
+top_k = false
 
 [limit]
 context = 1_000_000
 output = 131_072
 
-[modalities]
-input = ["text"]
-output = ["text"]
+[cost.text.input]
+price = 4
+cache = { read = 0.4 }
+
+[cost.text.output]
+price = 7
