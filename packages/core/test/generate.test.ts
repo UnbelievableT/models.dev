@@ -398,7 +398,7 @@ env = { TARGET_RESOURCE = "LEGACY_RESOURCE", TARGET_KEY = "LEGACY_KEY" }
     expect(qualifiedNames).toEqual([]);
   });
 
-  test("legacy_shape is published in v1 and never in v2", async () => {
+  test("legacy_shape and legacy_interleaved are published in v1 and never in v2", async () => {
     await withFixture(async (root) => {
       await write(root, "providers/provider/provider.toml", providerToml("Provider"));
       await write(
@@ -426,6 +426,7 @@ output = 128_000
 base_url = "https://example.com/v1"
 sdk = { aisdk = "@ai-sdk/openai" }
 legacy_shape = "responses"
+legacy_interleaved = true
 
 [cost.text.input]
 price = 1
@@ -441,12 +442,14 @@ price = 2
         api: "https://example.com/v1",
         shape: "responses",
       });
+      expect(providers.provider?.models.model?.interleaved).toBe(true);
 
       const providersV2 = await generateV2(path.join(root, "providers"));
       expect(providersV2.provider?.models.model?.api).toEqual({
         responses: { base_url: "https://example.com/v1", sdk: { aisdk: "@ai-sdk/openai" } },
       });
       expect(JSON.stringify(providersV2)).not.toContain("legacy_shape");
+      expect(JSON.stringify(providersV2)).not.toContain("legacy_interleaved");
     });
   });
 
@@ -712,6 +715,42 @@ sdk = { aisdk = "none" }
         // `aisdk = "none"` names the table's own (absent) package, so nothing is inherited.
         systemone: { base_url: "https://example.com/v1", sdk: {} },
       });
+    });
+  });
+
+  test("a table's path is published in v2 and never in v1", async () => {
+    await withFixture(async (root) => {
+      await write(root, "providers/gateway/provider.toml", provider());
+      await write(
+        root,
+        "providers/gateway/models/model.toml",
+        model(`
+[api.systemone]
+base_url = "https://decide.example.com/v1"
+path = "/decisions"
+`),
+      );
+
+      const v1 = await generate(path.join(root, "providers"));
+      expect(v1.gateway?.models.model?.provider).toEqual({ api: "https://decide.example.com/v1" });
+      expect(JSON.stringify(v1)).not.toContain("/decisions");
+
+      const v2 = await generateV2(path.join(root, "providers"));
+      expect(v2.gateway?.models.model?.api).toEqual({
+        systemone: {
+          base_url: "https://decide.example.com/v1",
+          path: "/decisions",
+          sdk: { aisdk: "@ai-sdk/openai-compatible" },
+        },
+      });
+    });
+  });
+
+  test("rejects a path that doesn't start with /", async () => {
+    await withFixture(async (root) => {
+      await write(root, "providers/gateway/provider.toml", provider());
+      await write(root, "providers/gateway/models/model.toml", model(`\n[api.systemone]\npath = "decisions"\n`));
+      await expect(generateV2(path.join(root, "providers"))).rejects.toThrow("Must start with /");
     });
   });
 

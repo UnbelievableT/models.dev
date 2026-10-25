@@ -30,7 +30,7 @@ import {
   type OutputModalityV2,
   type ReasoningSupportV2,
 } from "./schema-v2.js";
-import { modelV2ToV1, providerTomlToV1, withoutV1ReasoningCost } from "./translate.js";
+import { modelV2ToV1, providerTomlToV1, v1ModelType, withoutV1ReasoningCost } from "./translate.js";
 
 // ---------------------------------------------------------------------------
 // High-level catalog generation
@@ -104,7 +104,7 @@ async function loadProviderV2(
       .join("/")
       .slice(0, -5);
     const rawModel = { ...(await readToml(modelPath)), id: modelID };
-    const v1Model = modelV2ToV1(rawModel, { modelPath });
+    const v1Model = modelV2ToV1(rawModel, { modelPath }, v1Provider.npm);
     const resolved = resolveV1Model(v1Model, baseModels, modelPath);
     const model = withV2Fields(toModelV2(resolved, v1Provider), rawModel, labsV2, modelPath);
     const tables = (rawModel as Record<string, unknown>).api as Record<string, AuthoredApiEntryV2> | undefined;
@@ -169,6 +169,11 @@ function withV2Fields(
       authored.capabilities ?? {},
     ) as ModelV2["capabilities"],
   };
+  // v1 leaves v2-only types out, so they come from the files.
+  const type = authored.type ?? (omit.includes("type") ? undefined : lab?.type);
+  if (type !== undefined && v1ModelType(type, authored.v2_only, { modelPath, toml: rawModel }) === undefined) {
+    result.type = type;
+  }
   if (authored.cost !== undefined) result.cost = authored.cost;
   if (authored.experimental !== undefined) result.experimental = authored.experimental;
   if (authored.metadata !== undefined) result.metadata = authored.metadata;
@@ -213,7 +218,10 @@ export function toModelV2(model: Model, provider: Provider): ModelV2 {
       output: outputModalities,
     },
     capabilities: {
-      tools: model.tool_call ? { supported: true } : { supported: false },
+      // An update flag that isn't authored means the host doesn't support it.
+      tools: model.tool_call ? { supported: true, updates: false } : { supported: false },
+      system_updates: false,
+      effort_updates: false,
       reasoning: toReasoningSupportV2(model),
       ...(model.structured_output !== undefined && type !== "decision"
         ? { structured_output: model.structured_output }
@@ -427,14 +435,14 @@ export function resolveProtocol(
 ): ApiProtocolV2 {
   if (model.type === "decision") {
     if (provider.id === "cloudflare-workers-ai") return "workers-ai-run";
-    if (provider.id === "vercel") return "evaluate";
+    if (provider.id === "vercel") return "decisions";
     return "systemone";
   }
 
   if (npm === "@ai-sdk/anthropic" || npm === "@ai-sdk/google-vertex/anthropic") {
     return "messages";
   }
-  if (npm === "@ai-sdk/openai" || npm === "@ai-sdk/azure") {
+  if (npm === "@ai-sdk/openai" || npm === "@ai-sdk/azure" || npm === "@ai-sdk/xai") {
     return shape === "completions" ? "chat-completions" : "responses";
   }
   if (npm === "@ai-sdk/amazon-bedrock") {
@@ -475,9 +483,11 @@ function toModelApis(
       };
       const entry: ApiEntryV2 = {
         base_url,
+        ...(table.path !== undefined ? { path: table.path } : {}),
         // `"none"`: no package supports this API, so the key is left out.
         sdk: Object.fromEntries(Object.entries(sdk).filter(([, value]) => value !== undefined && value !== "none")),
         ...(table.compatibility !== undefined ? { compatibility: table.compatibility } : {}),
+        ...(table.capabilities !== undefined ? { capabilities: table.capabilities } : {}),
       };
       return [protocol, entry];
     }),
