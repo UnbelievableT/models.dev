@@ -12,6 +12,8 @@
 # https://api.topxai.xyz/docs/glm-5-3-abliterated (checked 2026-11-18).
 # Fixed prices, no long-context tier and no cache-write price:
 # https://api.topxai.xyz/pricing/glm-5.3-abliterated (accessed 2026-11-10)
+# Chat supports auto, none, required and named functions (tool_choice):
+# https://api.topxai.xyz/docs/glm-5-3-abliterated (checked 2026-11-18).
 schema = 2
 name = "GLM-5.3-Abliterated"
 description = "Fine-tuned GLM-5.3 with refusal alignment removed, on TopxAI's private deployment; text only"
@@ -37,6 +39,7 @@ context = 1_000_000
 output = 131_072
 
 [api.chat-completions]
+capabilities = { tools = { choice = ["auto", "none", "required", "tool"] } }
 
 [api.messages]
 sdk = { aisdk = "@ai-sdk/anthropic", opencodeai = "@opencode/ai/providers/anthropic-compatible" }

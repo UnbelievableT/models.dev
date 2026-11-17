@@ -12,8 +12,15 @@
 # returns valid JSON on /v1/responses (checked live 2026-11-13).
 # TopxAI also converts Anthropic Messages for this model:
 # https://api.topxai.xyz/docs/api-reference (checked 2026-11-18).
+# TopxAI documents text and image input. The JPEG and PNG formats follow the
+# xAI lab entry. PDF input lacks a TopxAI-specific source.
+# https://api.topxai.xyz/changelog#grok-4-7 (checked 2026-11-18).
 schema = 2
 base_model = "xai/grok-4.7"
+
+[modalities]
+input = ["text", "image/jpeg", "image/png"]
+output = ["text"]
 
 [capabilities]
 cache = { implicit = true }

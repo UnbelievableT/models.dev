@@ -12,6 +12,8 @@
 # and https://api.topxai.xyz/api/pricing (accessed 2026-11-10).
 # Fixed prices at every hour and context length; automatic cache reads, no separate
 # cache-write charge. Official DeepSeek comparison prices and peak hours do not apply.
+# Chat honours strict json_schema plus auto, none and required tool choice, per
+# https://api.topxai.xyz/docs/deepseek-flash-abliterated (2026-11-18).
 # Responses is stateless; send the full conversation. Messages converts to Chat.
 schema = 2
 name = "DeepSeek Flash Abliterated"
@@ -29,6 +31,7 @@ temperature = true
 top_p = true
 top_k = false
 tools = { supported = true }
+structured_output = true
 reasoning = { supported = true, default = { type = "effort", value = "low" }, effort = ["none", "low", "high", "max"] }
 cache = { implicit = true }
 
@@ -37,6 +40,7 @@ context = 1_048_576
 output = 131_072
 
 [api.chat-completions]
+capabilities = { tools = { choice = ["auto", "none", "required"] } }
 
 [api.responses]
 sdk = { aisdk = "@ai-sdk/openai", opencodeai = "@opencode/ai/providers/openai-compatible/responses" }
