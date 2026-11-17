@@ -7,6 +7,9 @@
 # https://api.topxai.xyz/api/pricing lists it since 2026-11-08); it always reasons. The trace returns in
 # message.reasoning (not reasoning_content), checked live 2026-10-23; v1 has no value
 # for that field, so no reasoning_field is set.
+# Chat Completions is the native API. TopxAI converts /v1/messages to Chat.
+# Only the Flash model serves /v1/responses, per the Route and endpoints table:
+# https://api.topxai.xyz/docs/glm-5-3-abliterated (checked 2026-11-18).
 # Fixed prices, no long-context tier and no cache-write price:
 # https://api.topxai.xyz/pricing/glm-5.3-abliterated (accessed 2026-11-10)
 schema = 2
@@ -32,6 +35,11 @@ top_k = false
 [limit]
 context = 1_000_000
 output = 131_072
+
+[api.chat-completions]
+
+[api.messages]
+sdk = { aisdk = "@ai-sdk/anthropic", opencodeai = "@opencode/ai/providers/anthropic-compatible" }
 
 [cost.text.input]
 price = 3

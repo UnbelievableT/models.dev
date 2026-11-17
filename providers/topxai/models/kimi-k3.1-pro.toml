@@ -5,6 +5,8 @@
 # input (base64 data URIs only), a 1,048,576-token context and 131,072 output tokens.
 # Its supported input set is narrower than the lab's, which also lists video.
 # Effort: reasoning_effort = low|high|max on Chat Completions (default low).
+# The private deployment guide asks clients to replay complete assistant messages.
+# It does not name a Chat reasoning trace field (checked 2026-11-18).
 # Reasoning is always on; no separate toggle. Host contract and current prices:
 # https://api.topxai.xyz/docs/kimi-k3-1-pro, https://api.topxai.xyz/pricing/kimi-k3.1-pro
 # and https://api.topxai.xyz/api/pricing (accessed 2026-11-08). Fixed prices; caching is
@@ -26,7 +28,6 @@ reasoning = { supported = true, default = { type = "effort", value = "low" }, ef
 output = 131_072
 
 [api.chat-completions]
-compatibility = { reasoning_field = "reasoning_content" }
 
 [api.responses]
 sdk = { aisdk = "@ai-sdk/openai", opencodeai = "@opencode/ai/providers/openai-compatible/responses" }
