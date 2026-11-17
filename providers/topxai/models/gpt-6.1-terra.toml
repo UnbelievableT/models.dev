@@ -19,6 +19,8 @@
 # a forced custom tool returned 42 as text and ZZ042 with either Lark or regex
 # (ZZ[0-9]{3}) when asked for 42. Both APIs also enforced a strict JSON schema
 # with a singleton enum despite the conflicting prompt.
+# TopxAI also converts Anthropic Messages for this model:
+# https://api.topxai.xyz/docs/api-reference (checked 2026-11-18).
 schema = 2
 base_model = "openai/gpt-6.1-terra"
 
@@ -27,15 +29,19 @@ input = ["text", "image"]
 output = ["text"]
 
 [capabilities]
-tools = { supported = true, freeform = ["text", "lark", "regex"] }
 structured_output = true
 cache = { implicit = true }
 reasoning = { supported = true, default = { type = "effort", value = "medium" }, effort = ["none", "low", "medium", "high", "xhigh", "max"] }
 
 [api.chat-completions]
+capabilities = { tools = { freeform = ["text", "lark", "regex"] } }
 
 [api.responses]
 sdk = { aisdk = "@ai-sdk/openai", opencodeai = "@opencode/ai/providers/openai-compatible/responses" }
+capabilities = { tools = { freeform = ["text", "lark", "regex"] } }
+
+[api.messages]
+sdk = { aisdk = "@ai-sdk/anthropic", opencodeai = "@opencode/ai/providers/anthropic-compatible" }
 
 [cost.text.input]
 price = 0.5
