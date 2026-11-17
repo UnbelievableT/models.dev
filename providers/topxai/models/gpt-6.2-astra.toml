@@ -1,0 +1,31 @@
+# Model and shared-pool rates: https://api.topxai.xyz/pricing/gpt-6.2-astra
+# Whole-request tier applies above 272,000 input tokens, including cached tokens.
+# Tool calling uses Responses: https://developers.openai.com/api/docs/guides/latest-model
+schema = 2
+base_model = "openai/gpt-6.2-astra"
+
+[capabilities]
+cache = { implicit = true }
+reasoning = { supported = true, effort = ["low", "medium", "high", "xhigh", "max"] }
+structured_output = true
+
+[api.chat-completions]
+
+[api.responses]
+sdk = { aisdk = "@ai-sdk/openai", opencodeai = "@opencode/ai/providers/openai-compatible/responses" }
+
+[cost.text.input]
+price = 4
+cache = { read = 0.2, write = 5 }
+
+[[cost.text.input.overrides]]
+when = { context = { gt = 272_000 } }
+price = 8
+cache = { read = 0.4, write = 10 }
+
+[cost.text.output]
+price = 20
+
+[[cost.text.output.overrides]]
+when = { context = { gt = 272_000 } }
+price = 30
